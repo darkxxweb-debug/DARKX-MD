@@ -29,6 +29,7 @@ function createServer() {
     app.use('/user', require('./route_user'));
 
     app.get('/', (req, res) => res.redirect('/pair'));
+    app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
 
     app.use((req, res) => res.status(404).render('404', { botName: 'DARKX-MD' }));
 

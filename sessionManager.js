@@ -63,17 +63,35 @@ async function startSession(phone, { onPairingCode, onStatus } = {}) {
         return sessions.get(phone).sock;
     }
 
-    const { state, saveCreds } = await useMongoAuthState(phone);
-    const { version } = await fetchLatestBaileysVersion();
-    const store = makeStore();
+    let state, saveCreds, version, store, sock;
+    try {
+        ({ state, saveCreds } = await useMongoAuthState(phone));
+    } catch (err) {
+        console.error(chalk.red(`[${phone}] useMongoAuthState failed (check MONGO_URI / DB connectivity):`), err);
+        throw err;
+    }
 
-    const sock = makeWASocket({
-        logger: pino({ level: 'silent' }),
-        auth: state,
-        version,
-        printQRInTerminal: false,
-        browser: Browsers.ubuntu('Chrome')
-    });
+    try {
+        ({ version } = await fetchLatestBaileysVersion());
+    } catch (err) {
+        console.error(chalk.red(`[${phone}] fetchLatestBaileysVersion failed (check outbound network access):`), err);
+        throw err;
+    }
+
+    store = makeStore();
+
+    try {
+        sock = makeWASocket({
+            logger: pino({ level: 'silent' }),
+            auth: state,
+            version,
+            printQRInTerminal: false,
+            browser: Browsers.ubuntu('Chrome')
+        });
+    } catch (err) {
+        console.error(chalk.red(`[${phone}] makeWASocket failed:`), err);
+        throw err;
+    }
 
     sessions.set(phone, { sock, store });
 
@@ -82,17 +100,25 @@ async function startSession(phone, { onPairingCode, onStatus } = {}) {
 
     // Request the pairing code once, using our constant custom code (DARKX-MD branding).
     if (!sock.authState.creds.registered) {
+        console.log(chalk.yellow(`[${phone}] requesting pairing code from WhatsApp...`));
         try {
             const code = await sock.requestPairingCode(phone, config.setPair);
+            console.log(chalk.green(`[${phone}] pairing code received: ${code}`));
             onStatus?.('pairing');
             onPairingCode?.(code);
         } catch (err) {
-            console.log(chalk.red(`[${phone}] Failed to request pairing code:`), err.message);
+            console.error(chalk.red(`[${phone}] Failed to request pairing code:`), err);
             onStatus?.('error');
         }
     }
 
     sock.ev.on('connection.update', async (update) => {
+        console.log(chalk.gray(`[${phone}] connection.update:`), JSON.stringify({
+            connection: update.connection,
+            qr: !!update.qr,
+            isNewLogin: update.isNewLogin,
+            statusCode: update.lastDisconnect?.error?.output?.statusCode
+        }));
         const { connection, lastDisconnect } = update;
 
         if (connection === 'open') {

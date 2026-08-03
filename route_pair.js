@@ -52,10 +52,14 @@ router.post('/pair/connect', async (req, res) => {
             startSession(phone, {
                 onPairingCode: (code) => resolve(code),
                 onStatus: () => {}
-            }).catch(() => resolve(null));
+            }).catch((err) => {
+                console.error(`[pair:${phone}] startSession failed:`, err);
+                resolve(null);
+            });
         }), 25000);
 
         if (!pairingCode) {
+            console.error(`[pair:${phone}] no pairing code after 25s (timed out or request never resolved — likely WhatsApp blocking this server's IP, or Mongo/network issue upstream).`);
             return res.json({ ok: false, message: 'Imeshindikana kupata pairing code. Hakikisha namba iko sahihi kisha jaribu tena.' });
         }
 
