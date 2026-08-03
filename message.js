@@ -14,13 +14,12 @@ const Api = require('./Api');
 const image = fs.readFileSync('./image.jpg');
 const docu = fs.readFileSync('./document.jpg');
 
-let jidNormalizedUser, getContentType, isPnUser;
+let jidNormalizedUser, getContentType;
 
 const loadBaileysUtils = async () => {
     const baileys = await import('@whiskeysockets/baileys');
     jidNormalizedUser = baileys.jidNormalizedUser;
     getContentType = baileys.getContentType;
-    isPnUser = baileys.isPnUser;
 };
 
 // Plugin Loader System with Menu Categorization
@@ -203,7 +202,7 @@ const pluginLoader = new PluginLoader();
 
 module.exports = sock = async (sock, m, chatUpdate, store) => {
     try {
-        if (!jidNormalizedUser || !getContentType || !isPnUser) {
+        if (!jidNormalizedUser || !getContentType) {
             await loadBaileysUtils();
         }
 
