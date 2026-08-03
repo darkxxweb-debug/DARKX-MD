@@ -1,0 +1,33 @@
+{
+  "name": "DARKX-MD",
+  "description": "DARKX-MD Multi-Session WhatsApp Bot Panel",
+  "repository": "https://github.com/yourusername/DARKX-MD",
+  "keywords": ["node", "whatsapp", "baileys", "darkx-md"],
+  "env": {
+    "MONGO_URI": {
+      "description": "Your MongoDB connection string (mongodb+srv://...)",
+      "required": true
+    },
+    "ADMIN_PASSWORD": {
+      "description": "Password for the admin panel (/admin/login)",
+      "required": true
+    },
+    "SESSION_SECRET": {
+      "description": "Random string used to sign web session cookies",
+      "required": true
+    },
+    "BOT_NUMBER": {
+      "description": "Default owner/bot number (optional, informational only)",
+      "required": false
+    }
+  },
+  "buildpacks": [
+    { "url": "heroku/nodejs" }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  }
+}

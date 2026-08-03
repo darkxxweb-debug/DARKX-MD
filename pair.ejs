@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= botName %> — Pair</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1><%= botName %></h1>
+    <p class="sub">Unganisha namba yako ya WhatsApp na bot.</p>
+
+    <form id="phoneForm">
+      <label>Namba ya WhatsApp (mfano 2557XXXXXXXX)</label>
+      <input type="text" id="phone" placeholder="2557XXXXXXXX" required>
+      <button type="submit" id="pairBtn">Pair</button>
+    </form>
+
+    <form id="voucherForm" class="hidden">
+      <label>Weka Voucher Code</label>
+      <input type="text" id="voucher" placeholder="14-digit voucher code" required>
+      <button type="submit" id="connectBtn">Unganisha (Connect)</button>
+      <button type="button" class="secondary" id="backBtn">⟵ Rudi</button>
+    </form>
+
+    <div id="msgBox"></div>
+    <div id="codeBox" class="code-box hidden"></div>
+
+    <p class="footer-note">Huna voucher? Wasiliana na admin wa <%= botName %>.</p>
+  </div>
+</div>
+
+<script>
+const phoneForm = document.getElementById('phoneForm');
+const voucherForm = document.getElementById('voucherForm');
+const msgBox = document.getElementById('msgBox');
+const codeBox = document.getElementById('codeBox');
+let currentPhone = '';
+
+phoneForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  currentPhone = document.getElementById('phone').value.trim();
+  if (!currentPhone) return;
+  phoneForm.classList.add('hidden');
+  voucherForm.classList.remove('hidden');
+});
+
+document.getElementById('backBtn').addEventListener('click', () => {
+  voucherForm.classList.add('hidden');
+  phoneForm.classList.remove('hidden');
+  msgBox.innerHTML = '';
+  codeBox.classList.add('hidden');
+});
+
+voucherForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const voucher = document.getElementById('voucher').value.trim();
+  const connectBtn = document.getElementById('connectBtn');
+  connectBtn.disabled = true;
+  connectBtn.textContent = 'Inaunganisha...';
+  msgBox.innerHTML = '';
+  codeBox.classList.add('hidden');
+
+  try {
+    const res = await fetch('/pair/connect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: currentPhone, voucher })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      codeBox.textContent = data.pairingCode;
+      codeBox.classList.remove('hidden');
+      msgBox.innerHTML = '<div class="msg success">Fungua WhatsApp > Linked Devices > Link with phone number, kisha andika code hii.</div>';
+    } else {
+      msgBox.innerHTML = '<div class="msg error">' + data.message + '</div>';
+    }
+  } catch (err) {
+    msgBox.innerHTML = '<div class="msg error">Hitilafu: ' + err.message + '</div>';
+  } finally {
+    connectBtn.disabled = false;
+    connectBtn.textContent = 'Unganisha (Connect)';
+  }
+});
+</script>
+</body>
+</html>

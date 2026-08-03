@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= botName %> — Admin Dashboard</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap wide">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h1>Admin Dashboard</h1>
+      <form method="POST" action="/admin/logout"><button class="secondary" type="submit" style="margin:0;width:auto;padding:8px 16px">Logout</button></form>
+    </div>
+    <p class="sub">Tengeneza voucher mpya kwa ajili ya user kuunganisha bot yake.</p>
+
+    <form method="POST" action="/admin/vouchers">
+      <div class="row">
+        <div>
+          <label>Namba ya User (hiari — acha wazi kama voucher ni ya jumla)</label>
+          <input type="text" name="phone" placeholder="2557XXXXXXXX">
+        </div>
+        <div>
+          <label>Idadi ya connections zinazoruhusiwa</label>
+          <input type="number" name="maxConnections" value="1" min="1" required>
+        </div>
+      </div>
+      <label>Muda wa voucher (siku)</label>
+      <input type="number" name="durationDays" value="30" min="1" required>
+      <button type="submit">Tengeneza Voucher</button>
+    </form>
+
+    <% if (created) { %>
+      <div class="msg success">Voucher mpya imetengenezwa: <strong><%= created %></strong></div>
+    <% } %>
+
+    <h1 style="margin-top:36px;font-size:18px">Vouchers</h1>
+    <table>
+      <thead><tr><th>Code</th><th>Namba</th><th>Matumizi</th><th>Inaisha</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        <% vouchers.forEach(v => { %>
+        <tr>
+          <td><%= v.code %></td>
+          <td><%= v.phone || 'Yeyote' %></td>
+          <td><%= v.usedConnections %>/<%= v.maxConnections %></td>
+          <td><%= new Date(v.expiresAt).toLocaleDateString() %></td>
+          <td><span class="pill <%= v.active ? 'active' : 'inactive' %>"><%= v.active ? 'Active' : 'Inactive' %></span></td>
+          <td>
+            <form method="POST" action="/admin/vouchers/<%= v._id %>/toggle" style="display:inline">
+              <button class="secondary" style="width:auto;padding:6px 10px;margin:0" type="submit"><%= v.active ? 'Zima' : 'Washa' %></button>
+            </form>
+            <form method="POST" action="/admin/vouchers/<%= v._id %>/delete" style="display:inline">
+              <button class="danger" style="width:auto;padding:6px 10px;margin:0" type="submit">Futa</button>
+            </form>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <h1 style="margin-top:36px;font-size:18px">Sessions</h1>
+    <table>
+      <thead><tr><th>Namba</th><th>Status</th><th>Voucher</th><th>Imeunganishwa</th></tr></thead>
+      <tbody>
+        <% sessions.forEach(s => { %>
+        <tr>
+          <td><%= s.phone %></td>
+          <td><span class="pill <%= s.status === 'connected' ? 'active' : 'inactive' %>"><%= s.status %></span></td>
+          <td><%= s.voucherCode || '-' %></td>
+          <td><%= s.connectedAt ? new Date(s.connectedAt).toLocaleString() : '-' %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

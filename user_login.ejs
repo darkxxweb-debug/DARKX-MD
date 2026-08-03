@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= botName %> — Login</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Login Yako</h1>
+    <p class="sub">Weka namba yako iliyounganishwa na bot. Code ya kuingia itatumwa kwenye WhatsApp yako.</p>
+    <form method="POST" action="/user/login">
+      <label>Namba ya WhatsApp</label>
+      <input type="text" name="phone" placeholder="2557XXXXXXXX" required autofocus>
+      <button type="submit">Tuma OTP</button>
+    </form>
+    <% if (error) { %><div class="msg error"><%= error %></div><% } %>
+    <p class="footer-note">Bado hujaunganisha bot? <a href="/pair">Pair hapa</a></p>
+  </div>
+</div>
+</body>
+</html>

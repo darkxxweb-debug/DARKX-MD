@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= botName %> — Weka OTP</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Weka Code</h1>
+    <p class="sub">Tumeituma code ya kuingia kwenye WhatsApp ya namba <strong><%= phone %></strong>.</p>
+    <form method="POST" action="/user/otp">
+      <label>OTP Code</label>
+      <input type="text" name="code" maxlength="6" required autofocus>
+      <button type="submit">Ingia</button>
+    </form>
+    <% if (error) { %><div class="msg error"><%= error %></div><% } %>
+  </div>
+</div>
+</body>
+</html>

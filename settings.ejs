@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= botName %> — Settings</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h1>Bot Settings</h1>
+      <form method="POST" action="/user/logout"><button class="secondary" type="submit" style="margin:0;width:auto;padding:8px 16px">Logout</button></form>
+    </div>
+    <p class="sub">Bot ya namba: <strong><%= user.phone %></strong></p>
+
+    <form method="POST" action="/user/settings">
+      <label>Jina la Bot</label>
+      <input type="text" name="botNameInput" value="<%= user.settings.botName %>">
+
+      <label>Prefix (mfano: . au !)</label>
+      <input type="text" name="prefix" value="<%= user.settings.prefix %>" maxlength="3">
+
+      <label>Ujumbe wa Karibu (Welcome Message)</label>
+      <input type="text" name="welcomeMessage" value="<%= user.settings.welcomeMessage %>">
+
+      <div class="toggle-row">
+        <label>Public Mode (kila mtu aweze kutumia commands)</label>
+        <input type="checkbox" name="publicMode" <%= user.settings.publicMode ? 'checked' : '' %>>
+      </div>
+      <div class="toggle-row">
+        <label>Auto Read Messages</label>
+        <input type="checkbox" name="autoRead" <%= user.settings.autoRead ? 'checked' : '' %>>
+      </div>
+      <div class="toggle-row">
+        <label>Auto View Status</label>
+        <input type="checkbox" name="autoStatusView" <%= user.settings.autoStatusView ? 'checked' : '' %>>
+      </div>
+      <div class="toggle-row">
+        <label>Anti-Delete</label>
+        <input type="checkbox" name="antidelete" <%= user.settings.antidelete ? 'checked' : '' %>>
+      </div>
+
+      <button type="submit">Hifadhi Mabadiliko</button>
+    </form>
+
+    <% if (saved) { %><div class="msg success">Mabadiliko yamehifadhiwa!</div><% } %>
+  </div>
+</div>
+</body>
+</html>
