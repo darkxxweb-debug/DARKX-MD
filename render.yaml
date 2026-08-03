@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: darkxxweb-bot-service
+    name: darkx-md
     env: node
     plan: starter
     buildCommand: npm install
